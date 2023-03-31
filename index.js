@@ -49,6 +49,23 @@ async function run() {
       const result = await categoryCollection.find({}).toArray();
       res.send(result);
     });
+ 
+     //filter
+     app.get("/filter/:items", async (req, res) => {
+        const items = req.params.items;
+        const values = items.split('+')
+        const filterValue = values.filter(Boolean)
+        const result = [];
+        const allCourses = await courseCollection.find({}).toArray();
+        allCourses.forEach((course)=>{
+           filterValue.forEach((value)=>{
+            if(course.category===value){
+                result.push(course)
+            }
+           })
+        })
+        res.send(result)
+      });
   } catch {}
 }
 run().catch((err) => console.log(err));
