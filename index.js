@@ -19,20 +19,36 @@ const client = new MongoClient(uri, {
 
 async function run() {
   const courseCollection = client.db("task").collection("courses");
+  const categoryCollection = client.db("task").collection("category");
   try {
     //insert course into the database
     app.post("/add", async (req, res) => {
       const info = req.body;
       const result = await courseCollection.insertOne(info);
+
+      const findCategory = await categoryCollection.findOne({
+        category: info.category,
+      });
+      if (!findCategory) {
+        const insert = await categoryCollection.insertOne({
+          category: info.category,
+        });
+      }
       res.send(result);
     });
 
-     //find all courses
-     app.get("/allCourses", async (req, res) => {
-        const cursor = courseCollection.find({});
-        const result = await cursor.toArray();
-        res.send(result);
-      });
+    //find all courses
+    app.get("/allCourses", async (req, res) => {
+      const cursor = courseCollection.find({});
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    //find all categories
+    app.get("/allCategories", async (req, res) => {
+      const result = await categoryCollection.find({}).toArray();
+      res.send(result);
+    });
   } catch {}
 }
 run().catch((err) => console.log(err));
