@@ -26,6 +26,13 @@ async function run() {
       const result = await courseCollection.insertOne(info);
       res.send(result);
     });
+
+     //find all courses
+     app.get("/allCourses", async (req, res) => {
+        const cursor = courseCollection.find({});
+        const result = await cursor.toArray();
+        res.send(result);
+      });
   } catch {}
 }
 run().catch((err) => console.log(err));
